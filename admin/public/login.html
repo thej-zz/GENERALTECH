@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Sign in | General Tech Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Barlow:wght@400;500&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin/static/admin.css">
+</head>
+<body>
+<main class="login">
+  <form class="login-card" id="form" autocomplete="on">
+    <div class="logo">General<span>Tech</span></div>
+    <h1>Studio</h1>
+    <p>Sign in to manage the photos on your website.</p>
+    <label class="field"><span>Username</span><input name="username" autocomplete="username" required autofocus></label>
+    <label class="field"><span>Password</span><input name="password" type="password" autocomplete="current-password" required></label>
+    <div class="form-error" id="err" role="alert"></div>
+    <button class="btn" id="go" type="submit">Sign in</button>
+    <a class="login-back" href="/">Back to the website</a>
+  </form>
+</main>
+<script>
+const form = document.getElementById('form'), err = document.getElementById('err'), go = document.getElementById('go');
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  err.textContent = ''; go.disabled = true;
+  try {
+    const res = await fetch('/admin/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'fetch' },
+      body: JSON.stringify(Object.fromEntries(new FormData(form)))
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not sign in.');
+    location.reload();
+  } catch (ex) { err.textContent = ex.message; go.disabled = false; }
+});
+</script>
+</body>
+</html>

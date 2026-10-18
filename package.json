@@ -1,15 +1,22 @@
 {
   "name": "general-tech-website",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
-    "express": "^4.22.1"
+    "db": "^6.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.22.1",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.12.0",
+    "sharp": "^0.33.5"
   },
-  "description": "",
-  "keywords": [],
-  "author": "",
+  "engines": {
+    "node": ">=18"
+  },
+  "description": "General Tech Services website with admin dashboard",
   "license": "ISC"
 }

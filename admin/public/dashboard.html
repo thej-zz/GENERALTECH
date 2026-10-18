@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Studio | General Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Barlow:wght@400;500&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin/static/admin.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="side" id="side">
+    <div class="brand"><a class="logo" href="#/">General<span>Tech</span></a><small>Studio</small></div>
+    <nav id="nav" aria-label="Sections"></nav>
+    <div class="side-foot">
+      <a class="nav-link" href="/" target="_blank" rel="noopener">View the website</a>
+      <button class="nav-link" id="logout" type="button">Sign out</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <main class="main-wrap">
+    <div class="topbar">
+      <button class="menu-btn" id="menu" type="button" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <span class="logo">General<span>Tech</span></span>
+    </div>
+    <div class="main" id="view"></div>
+  </main>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="/admin/static/admin.js"></script>
+</body>
+</html>

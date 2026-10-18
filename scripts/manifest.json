@@ -1,0 +1,402 @@
+[
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r1.jpeg",
+  "description": "Roofing Dresswork"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r2.png",
+  "description": "Roofing Dresswork"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r3.jpeg",
+  "description": "Roofing Dresswork"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r4.jpeg",
+  "description": "Complete Structure,Roofing, Ceiling, Cladding and Glasswork of new house"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r5.jpeg",
+  "description": "Architectural roofing with clean seamless finish"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r6.jpeg",
+  "description": "Weather-resistant roof system for commercial building"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r7.png",
+  "description": "Cementboard partition refurb work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r8.png",
+  "description": "Cementboard partition refurb work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r9.png",
+  "description": "Cementboard partition refurb work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r10.png",
+  "description": "BEFORE : Cementboard Partition Refurb work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r11.png",
+  "description": "AFTER : Cementboard Partition Refurb work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r12.png",
+  "description": "Stone coated sheet work in progress"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r13.png",
+  "description": "Stone coated sheet work in progress"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r14.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r15.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r16.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r17.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r18.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r19.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r20.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r21.jpeg",
+  "description": "Roofing work"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r22.jpeg",
+  "description": "Cladding glass roofwork"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r23.jpeg",
+  "description": "Cladding glass roofwork"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r24.jpeg",
+  "description": "Cladding glass roofwork"
+ },
+ {
+  "category": "roofing",
+  "file": "assets/roofing/r25.jpeg",
+  "description": "Tile sheet roofing"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g1.png",
+  "description": "CNC cutting gate work"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g2.png",
+  "description": "CNC cutting gate work"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g3.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g4.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g5.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g6.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g7.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g8.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g9.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g10.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g11.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "gates",
+  "file": "assets/gates/g12.png",
+  "description": "Gate works"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s1.png",
+  "description": "HPL Ceiling"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s2.png",
+  "description": "HPL Ceiling"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s3.png",
+  "description": "Sunshade Made With ACP Roof"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s4.png",
+  "description": "ACP ROOF"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s5.png",
+  "description": "ACP ROOF"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s6.png",
+  "description": "ACP ROOF"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s7.png",
+  "description": "Sunshade Glasswork"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s8.png",
+  "description": "Sunshade Glasswork"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s9.png",
+  "description": "Sunshade Made With ACP Roof"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s10.jpeg",
+  "description": "Polycarbon sheet sunshade"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s11.jpeg",
+  "description": "Polycarbon sheet sunshade"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s12.jpeg",
+  "description": "Polycarbon sheet sunshade"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s13.jpeg",
+  "description": "Polycarbon sheet sunshade"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s14.jpeg",
+  "description": "Polycarbon sheet sunshade"
+ },
+ {
+  "category": "sunshade",
+  "file": "assets/sunshade/s15.jpeg",
+  "description": "Polycarbon sheet sunshade"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl1.png",
+  "description": "Garage work"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl2.png",
+  "description": "V Board Partition"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl3.png",
+  "description": "ACP Handrail"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl4.png",
+  "description": "HPL Sheet Ceiling"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl5.png",
+  "description": "Car shed made with ACP Roof"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl6.png",
+  "description": "Ceiling Fan wall mount made with gp tubes"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl7.png",
+  "description": "Steel handrail with cnc design"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl8.png",
+  "description": "Roofing tile Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl9.png",
+  "description": "Roofing tile Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl10.png",
+  "description": "Roofing tile Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl11.png",
+  "description": "Roofing tile Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl12.png",
+  "description": "Roofing tile Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl13.png",
+  "description": "Roofing tile Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl14.png",
+  "description": "Exterior cladding sheet"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl15.png",
+  "description": "MS Handrail with CNC Design"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl16.png",
+  "description": "Kennel work"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl17.png",
+  "description": "Gate work completed"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl18.png",
+  "description": "ACP Handrail"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl19.png",
+  "description": "Car shed model"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl20.png",
+  "description": "Steel fabrication door"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl21.jpeg",
+  "description": "Roof tyle Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl22.jpeg",
+  "description": "Mesh Work"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl23.png",
+  "description": "Showcase work"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl24.png",
+  "description": "Roofing Variations"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl25.jpeg",
+  "description": "Shelf work"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl27.jpeg",
+  "description": "Shelf work"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl28.jpeg",
+  "description": "Water Tank Stand"
+ },
+ {
+  "category": "rails",
+  "file": "assets/rails/rl29.jpeg",
+  "description": "Flower Pot Stand"
+ }
+]
