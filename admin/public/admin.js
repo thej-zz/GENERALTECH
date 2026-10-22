@@ -3,6 +3,7 @@
   const $ = s => document.querySelector(s);
   const view = $('#view');
   let overview = [];
+  let hero = { custom: false, url: '/site/hero' };
 
   /* ---------- helpers ---------- */
   const ICONS = {
@@ -10,6 +11,8 @@
     trash: '<path d="M4 7h16M10 11v6m4-6v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3"/>',
     left: '<path d="m14 6-6 6 6 6"/>',
     right: '<path d="m10 6 6 6-6 6"/>',
+    swap: '<path d="M4 8h13l-3-3M20 16H7l3 3"/>',
+    external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
     grip: '<circle cx="9" cy="6" r="1.2"/><circle cx="15" cy="6" r="1.2"/><circle cx="9" cy="12" r="1.2"/><circle cx="15" cy="12" r="1.2"/><circle cx="9" cy="18" r="1.2"/><circle cx="15" cy="18" r="1.2"/>'
   };
   const icon = n => {
@@ -82,10 +85,14 @@
     $('#nav').replaceChildren(
       link('#/', 'Overview'),
       h('div', { class: 'nav-label' }, 'Website sections'),
+      link('#/homepage', 'Homepage banner'),
       ...overview.map(c => link('#/' + c.key, c.label, c.count)));
   }
 
-  async function loadOverview() { overview = await api('/overview'); renderNav(); }
+  async function loadOverview() {
+    [overview, hero] = await Promise.all([api('/overview'), api('/site/hero')]);
+    renderNav();
+  }
   const currentRoute = () => location.hash.replace(/^#\/?/, '');
 
   /* ---------- overview page ---------- */
@@ -95,8 +102,13 @@
     view.replaceChildren(
       h('div', { class: 'page-head' }, h('div', {},
         h('h1', {}, 'Your work, live online'),
-        h('p', {}, 'Photos you add or remove here appear on the matching website page straight away. Pick a section to manage it.'))),
-      h('div', { class: 'tiles' }, overview.map(c => h('a', { class: 'tile', href: '#/' + c.key },
+        h('p', {}, 'Photos, captions and the homepage banner you change here appear on the website straight away. Pick a section to manage it.'))),
+      h('div', { class: 'tiles' },
+        h('a', { class: 'tile', href: '#/homepage' },
+          h('div', { class: 'mosaic single' }, h('img', { src: hero.url, alt: '', loading: 'lazy' })),
+          h('div', { class: 'tile-body' }, h('h2', {}, 'Homepage banner'),
+            h('span', {}, hero.custom ? 'Your own photo' : 'Original photo'))),
+        ...overview.map(c => h('a', { class: 'tile', href: '#/' + c.key },
         h('div', { class: 'mosaic' }, c.previews.length
           ? c.previews.map(src => h('img', { src, alt: '', loading: 'lazy' }))
           : h('div', { class: 'none' }, 'No photos yet')),
@@ -115,7 +127,7 @@
     let staged = [];
     const meta = h('p');
     const grid = h('div', { class: 'grid' });
-    const hint = h('p', { class: 'hint' }, 'Drag the grip, or use the arrows, to change the order. Edit a caption and click away to save it.');
+    const hint = h('p', { class: 'hint' }, 'Drag the grip, or use the arrows, to change the order. Type in a caption, then press Enter or click away to save it. Hover a photo to replace or delete it.');
     const input = h('input', { type: 'file', accept: 'image/*', multiple: true, hidden: true });
     const stage = h('section', { class: 'stage', hidden: true });
     const drop = h('div', { class: 'drop' }, icon('upload'),
@@ -142,11 +154,31 @@
     };
     let dragging = null;
     function card(it) {
-      const cap = h('input', { class: 'cap', value: it.description, placeholder: 'Add a caption', maxlength: 300, 'aria-label': 'Caption' });
+      const cap = h('textarea', { class: 'cap', rows: 2, placeholder: 'Add a caption', maxlength: 300, 'aria-label': 'Caption' }, it.description);
       let saved = it.description;
+      cap.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); cap.blur(); }          // Enter saves
+        else if (e.key === 'Escape') { cap.value = saved; cap.blur(); }     // Esc cancels
+      });
       cap.addEventListener('change', async () => {
         try { const r = await api('/images/' + it.id, { method: 'PATCH', body: JSON.stringify({ description: cap.value }) }); saved = r.description; cap.value = saved; toast('Caption saved', 'ok'); }
         catch (e) { cap.value = saved; toast(e.message, 'error'); }
+      });
+      const swapInput = h('input', { type: 'file', accept: 'image/*', hidden: true });
+      swapInput.addEventListener('change', async () => {
+        const f = swapInput.files[0]; swapInput.value = '';
+        if (!f) return;
+        if (!f.type.startsWith('image/')) return toast(`${f.name} is not an image.`, 'error');
+        if (f.size > MAX_BYTES) return toast(`${f.name} is over 15 MB.`, 'error');
+        el.classList.add('busy');
+        try {
+          const fd = new FormData(); fd.append('image', f);
+          const r = await api('/images/' + it.id + '/file', { method: 'PUT', body: fd });
+          it.thumb = r.thumb; it.full = r.full;
+          el.querySelector('.thumb img').src = r.thumb;
+          toast('Photo replaced', 'ok');
+        } catch (e) { toast(e.message, 'error'); }
+        finally { el.classList.remove('busy'); }
       });
       const el = h('article', { class: 'card', 'data-id': it.id },
         h('button', { class: 'thumb', type: 'button', 'aria-label': 'View larger', onclick: () => openLightbox(it.full, cap.value) },
@@ -156,8 +188,10 @@
             h('span', { class: 'icon-btn handle', title: 'Drag to reorder', onmousedown: () => { el.draggable = true; } }, icon('grip')),
             h('button', { class: 'icon-btn', type: 'button', title: 'Move earlier', 'aria-label': 'Move earlier', onclick: () => { el.previousElementSibling?.before(el); saveOrder(); } }, icon('left')),
             h('button', { class: 'icon-btn', type: 'button', title: 'Move later', 'aria-label': 'Move later', onclick: () => { el.nextElementSibling?.after(el); saveOrder(); } }, icon('right'))),
-          h('div', {}, h('button', { class: 'icon-btn del', type: 'button', title: 'Delete', 'aria-label': 'Delete photo', onclick: () => remove(it, el, cap.value) }, icon('trash')))),
-        cap);
+          h('div', {},
+            h('button', { class: 'icon-btn', type: 'button', title: 'Replace this photo', 'aria-label': 'Replace photo', onclick: () => swapInput.click() }, icon('swap')),
+            h('button', { class: 'icon-btn del', type: 'button', title: 'Delete', 'aria-label': 'Delete photo', onclick: () => remove(it, el, cap.value) }, icon('trash')))),
+        cap, swapInput);
       el.addEventListener('dragstart', e => { dragging = el; el.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', it.id); });
       el.addEventListener('dragend', () => { el.classList.remove('dragging'); el.draggable = false; dragging = null; saveOrder(); });
       return el;
@@ -252,9 +286,64 @@
     view.replaceChildren(
       h('div', { class: 'page-head' },
         h('div', {}, h('h1', {}, label(key)), meta),
-        h('button', { class: 'btn', type: 'button', onclick: () => input.click() }, icon('upload'), 'Add photos')),
+        h('div', { class: 'head-actions' },
+          h('a', { class: 'btn ghost', href: `/works/${key}.html`, target: '_blank', rel: 'noopener' }, icon('external'), 'View page'),
+          h('button', { class: 'btn', type: 'button', onclick: () => input.click() }, icon('upload'), 'Add photos'))),
       input, drop, stage, hint, grid, empty);
     updateMeta();
+  }
+
+
+  /* ---------- homepage banner page ---------- */
+  function renderHomepage() {
+    const input = h('input', { type: 'file', accept: 'image/*', hidden: true });
+    const img = h('img', { src: hero.url, alt: 'Current homepage banner' });
+    const badge = h('span', { class: 'badge' });
+    const restore = h('button', { class: 'btn ghost', type: 'button' }, 'Use the original photo');
+    const pick = h('button', { class: 'btn', type: 'button', onclick: () => input.click() }, icon('upload'), 'Choose a new banner photo');
+    const preview = h('div', { class: 'hero-preview' }, img, badge);
+
+    function paint() {
+      img.src = hero.url;
+      badge.textContent = hero.custom ? 'Your own photo' : 'Original photo';
+      restore.hidden = !hero.custom;
+    }
+    async function send(f) {
+      if (!f) return;
+      if (!f.type.startsWith('image/')) return toast(`${f.name} is not an image.`, 'error');
+      if (f.size > MAX_BYTES) return toast(`${f.name} is over 15 MB.`, 'error');
+      preview.classList.add('busy'); pick.disabled = restore.disabled = true;
+      try {
+        const fd = new FormData(); fd.append('image', f);
+        hero = await api('/site/hero', { method: 'PUT', body: fd });
+        paint(); toast('Homepage banner updated', 'ok');
+      } catch (e) { toast(e.message, 'error'); }
+      finally { preview.classList.remove('busy'); pick.disabled = restore.disabled = false; }
+    }
+    restore.addEventListener('click', async () => {
+      const ok = await confirmDialog({ title: 'Use the original banner?', body: 'Your uploaded banner photo will be removed and the website will show the original photo again.', action: 'Use original' });
+      if (!ok) return;
+      try { hero = await api('/site/hero', { method: 'DELETE' }); paint(); toast('Original banner restored', 'ok'); }
+      catch (e) { toast(e.message, 'error'); }
+    });
+    input.addEventListener('change', () => { send(input.files[0]); input.value = ''; });
+    ['dragenter', 'dragover'].forEach(ev => preview.addEventListener(ev, e => { if (e.dataTransfer?.types.includes('Files')) { e.preventDefault(); preview.classList.add('over'); } }));
+    ['dragleave', 'drop'].forEach(ev => preview.addEventListener(ev, () => preview.classList.remove('over')));
+    preview.addEventListener('drop', e => { e.preventDefault(); send(e.dataTransfer.files[0]); });
+
+    view.replaceChildren(
+      h('div', { class: 'page-head' },
+        h('div', {}, h('h1', {}, 'Homepage banner'),
+          h('p', {}, 'The large photo at the very top of your website’s home page.')),
+        h('div', { class: 'head-actions' },
+          h('a', { class: 'btn ghost', href: '/', target: '_blank', rel: 'noopener' }, icon('external'), 'View website'))),
+      h('div', { class: 'hero-card' },
+        preview,
+        h('div', { class: 'hero-actions' }, pick, restore),
+        h('p', { class: 'hint', style: 'margin:0;padding:0 20px 20px' },
+          'Tip: use a wide, landscape photo at least 1600 pixels across. The website darkens it a little so the white text stays easy to read. You can also drag a photo onto the preview.')),
+      input);
+    paint();
   }
 
   /* ---------- router ---------- */
@@ -262,13 +351,14 @@
     $('#side').classList.remove('open'); $('#scrim').hidden = true;
     renderNav();
     const r = currentRoute();
-    if (overview.some(c => c.key === r)) renderSection(r);
+    if (r === 'homepage') renderHomepage();
+    else if (overview.some(c => c.key === r)) renderSection(r);
     else renderOverview();
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', async () => {
     // Overview page needs fresh thumbnails/counts each time you return to it.
-    if (!overview.some(c => c.key === currentRoute())) await loadOverview().catch(() => {});
+    if (!overview.some(c => c.key === currentRoute())) await loadOverview().catch(() => {});  // overview + banner pages need fresh data
     route();
   });
 

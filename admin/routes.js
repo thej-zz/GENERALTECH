@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const { pool } = require('../db');
-const { processImage } = require('../image');
+const { processImage, processHero } = require('../image');
 const CATEGORIES = require('../categories');
 const auth = require('../auth');
 
@@ -14,6 +14,9 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 15 * 1024 * 1024, files: 20 }
 });
+
+const thumbUrl = (id, rev) => `/media/${id}/thumb?v=${rev}`;
+const fullUrl = (id, rev) => `/media/${id}?v=${rev}`;
 
 // Never cache or index anything under /admin.
 router.use((req, res, next) => {
@@ -27,8 +30,13 @@ router.use((req, res, next) => {
   next();
 });
 
-// Static assets for the login/dashboard UI (no secrets in these).
-router.use('/static', express.static(PUB, { index: false, setHeaders: r => r.set('Cache-Control', 'no-cache') }));
+// Only the stylesheet and script are public (the login page needs them).
+// dashboard.html / login.html are NOT served from here - see GET / below.
+const STATIC_FILES = new Set(['admin.css', 'admin.js']);
+router.get('/static/:file', (req, res) => {
+  if (!STATIC_FILES.has(req.params.file)) return res.sendStatus(404);
+  res.sendFile(path.join(PUB, req.params.file), { headers: { 'Cache-Control': 'no-cache' } });
+});
 
 // The dashboard HTML is only ever sent to a signed-in admin.
 router.get('/', (req, res) => {
@@ -63,8 +71,8 @@ router.get('/api/overview', async (req, res, next) => {
                COALESCE(SUM(octet_length(data) + octet_length(thumb)), 0)::float8 AS bytes
         FROM work_images GROUP BY category`),
       pool.query(`
-        SELECT category, id FROM (
-          SELECT category, id,
+        SELECT category, id, rev FROM (
+          SELECT category, id, rev,
                  ROW_NUMBER() OVER (PARTITION BY category ORDER BY sort_order, id) AS rn
           FROM work_images) t
         WHERE rn <= 3 ORDER BY category, rn`)
@@ -74,7 +82,7 @@ router.get('/api/overview', async (req, res, next) => {
       key: c.key, label: c.label,
       count: by[c.key]?.count || 0,
       bytes: by[c.key]?.bytes || 0,
-      previews: prev.rows.filter(r => r.category === c.key).map(r => `/media/${r.id}/thumb`)
+      previews: prev.rows.filter(r => r.category === c.key).map(r => thumbUrl(r.id, r.rev))
     })));
   } catch (e) { next(e); }
 });
@@ -84,9 +92,9 @@ router.get('/api/images', async (req, res, next) => {
   if (!valid.has(category)) return res.status(400).json({ error: 'Unknown category' });
   try {
     const { rows } = await pool.query(
-      `SELECT id, description, created_at FROM work_images
+      `SELECT id, description, rev, created_at FROM work_images
        WHERE category = $1 ORDER BY sort_order, id`, [category]);
-    res.json(rows.map(r => ({ ...r, thumb: `/media/${r.id}/thumb`, full: `/media/${r.id}` })));
+    res.json(rows.map(({ rev, ...r }) => ({ ...r, thumb: thumbUrl(r.id, rev), full: fullUrl(r.id, rev) })));
   } catch (e) { next(e); }
 });
 
@@ -119,6 +127,7 @@ router.post('/api/images', upload.array('images', 20), async (req, res, next) =>
   } catch (e) { next(e); }
 });
 
+// Edit a caption.
 router.patch('/api/images/:id', async (req, res, next) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) return res.sendStatus(404);
@@ -127,6 +136,25 @@ router.patch('/api/images/:id', async (req, res, next) => {
     const r = await pool.query('UPDATE work_images SET description = $1 WHERE id = $2', [description, id]);
     if (!r.rowCount) return res.sendStatus(404);
     res.json({ ok: true, description });
+  } catch (e) { next(e); }
+});
+
+// Replace the picture of an existing photo. Keeps its caption and its position in the gallery.
+router.put('/api/images/:id/file', upload.single('image'), async (req, res, next) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+  if (!req.file) return res.status(400).json({ error: 'No image received' });
+  try {
+    let img;
+    try { img = await processImage(req.file.buffer); }
+    catch (e) { return res.status(422).json({ error: e.message }); }
+    const r = await pool.query(
+      `UPDATE work_images SET mime = $1, data = $2, thumb = $3, rev = rev + 1
+       WHERE id = $4 RETURNING rev`,
+      [img.mime, img.data, img.thumb, id]);
+    if (!r.rowCount) return res.sendStatus(404);
+    const rev = r.rows[0].rev;
+    res.json({ ok: true, thumb: thumbUrl(id, rev), full: fullUrl(id, rev) });
   } catch (e) { next(e); }
 });
 
@@ -151,6 +179,39 @@ router.put('/api/order', async (req, res, next) => {
        FROM unnest($1::int[]) WITH ORDINALITY AS v(id, ord)
        WHERE w.id = v.id AND w.category = $2`, [ids, category]);
     res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+
+// ---- homepage banner ----
+router.get('/api/site/hero', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query("SELECT rev FROM site_images WHERE key = 'hero'");
+    res.json({ custom: rows.length > 0, url: `/site/hero?v=${rows[0]?.rev ?? 0}` });
+  } catch (e) { next(e); }
+});
+
+router.put('/api/site/hero', upload.single('image'), async (req, res, next) => {
+  if (!req.file) return res.status(400).json({ error: 'No image received' });
+  try {
+    let img;
+    try { img = await processHero(req.file.buffer); }
+    catch (e) { return res.status(422).json({ error: e.message }); }
+    const { rows } = await pool.query(
+      `INSERT INTO site_images (key, mime, data) VALUES ('hero', $1, $2)
+       ON CONFLICT (key) DO UPDATE
+         SET mime = EXCLUDED.mime, data = EXCLUDED.data,
+             rev = site_images.rev + 1, updated_at = now()
+       RETURNING rev`,
+      [img.mime, img.data]);
+    res.json({ ok: true, custom: true, url: `/site/hero?v=${rows[0].rev}` });
+  } catch (e) { next(e); }
+});
+
+// Remove the uploaded banner; the website goes back to the original photo.
+router.delete('/api/site/hero', async (req, res, next) => {
+  try {
+    await pool.query("DELETE FROM site_images WHERE key = 'hero'");
+    res.json({ ok: true, custom: false, url: '/site/hero?v=0' });
   } catch (e) { next(e); }
 });
 
